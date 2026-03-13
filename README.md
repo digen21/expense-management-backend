@@ -67,8 +67,32 @@ $ cd expense-management-backend
 $ yarn install
 $ cp .env.example .env
 $ yarn run prisma:migrate
-$ yarn run prisma:seed
+$ yarn run db:seed
 $ yarn run start:dev
+```
+
+## Prisma scripts
+
+The project exposes helper scripts in `package.json` for Prisma operations:
+
+- `yarn run prisma:generate` - generate Prisma Client
+- `yarn run prisma:migrate` - create/apply migrations in development mode
+- `yarn run prisma:reset` - reset database and rerun migrations
+- `yarn run prisma:create` - create a new migration file
+- `yarn run prisma:db:push` - push the Prisma schema to the database
+- `yarn run db:seed` - run `ts-node prisma/seed.ts` directly
+
+Optional direct Prisma commands:
+
+```bash
+# generate client
+$ npx prisma generate
+
+# apply migrations
+$ npx prisma migrate dev
+
+# inspect your schema
+$ npx prisma db pull
 ```
 
 ## Compile and run the project
