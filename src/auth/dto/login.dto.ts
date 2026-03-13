@@ -1,9 +1,13 @@
 import { Role, User } from '@prisma/expense-tracker-client';
-import { IsString } from 'class-validator';
+import { IsOptional, IsString, IsUUID } from 'class-validator';
 import { Request } from 'express';
 import { RegisterUserDto } from './register.dto';
 
-export class LoginUserDto extends RegisterUserDto {}
+export class LoginUserDto extends RegisterUserDto {
+  @IsUUID()
+  @IsOptional()
+  organizationId?: string;
+}
 
 export type SafeUser = Omit<User, 'password'>;
 

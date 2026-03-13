@@ -16,4 +16,8 @@ export class EnvConfig {
   @IsString()
   @MinLength(32)
   JWT_REFRESH_SECRET!: string;
+
+  @IsString()
+  @MinLength(32)
+  WEBHOOK_SECRET!: string;
 }

@@ -1,15 +1,85 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Get a free hosted Postgres database in seconds: `npx create-db`
-
 generator client {
-  provider = "prisma-client-js"
-  output   = "../node_modules/@prisma/expense-tracker-client"
+  provider        = "prisma-client-js"
+  output          = "../node_modules/@prisma/expense-tracker-client"
+  previewFeatures = ["views"]
 }
 
 datasource db {
   provider = "postgresql"
+}
+
+model Organization {
+  id                  String               @id @default(uuid()) @db.Uuid
+  name                String               @unique
+  createdAt           DateTime             @default(now()) @map("created_at")
+  updatedAt           DateTime             @default(now()) @updatedAt @map("updated_at")
+  expenses            Expenses[]
+  organizationInvites OrganizationInvite[]
+  users               User[]
+
+  @@map("organizations")
+}
+
+model OrganizationInvite {
+  id             String       @id @default(uuid()) @db.Uuid
+  email          String
+  organizationId String       @map("organization_id") @db.Uuid
+  role           Role
+  token          String       @unique
+  expiresAt      DateTime     @map("expires_at")
+  accepted       Boolean      @default(false)
+  createdAt      DateTime     @default(now()) @map("created_at")
+  updatedAt      DateTime     @default(now()) @updatedAt @map("updated_at")
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@unique([email, organizationId])
+  @@map("organization_invite")
+}
+
+model User {
+  id             String        @id @default(uuid()) @db.Uuid
+  email          String
+  password       String
+  role           Role          @default(USER)
+  organizationId String?       @map("organization_id") @db.Uuid
+  refreshToken   String?       @map("refresh_token")
+  createdAt      DateTime      @default(now()) @map("created_at")
+  updatedAt      DateTime      @default(now()) @updatedAt @map("updated_at")
+  expenses       Expenses[]
+  organization   Organization? @relation(fields: [organizationId], references: [id])
+
+  @@unique([email, organizationId])
+  @@map("users")
+}
+
+model Expenses {
+  id              String          @id @default(uuid()) @db.Uuid
+  amount          Decimal         @db.Decimal(10, 2)
+  category        ExpenseCategory
+  description     String?
+  date            DateTime
+  receiptUrl      String?         @map("receipt_url")
+  status          ExpenseStatus   @default(DRAFT)
+  rejectionReason String?         @map("rejection_reason")
+  userId          String          @map("user_id") @db.Uuid
+  organizationId  String          @map("organization_id") @db.Uuid
+  createdAt       DateTime        @default(now()) @map("created_at")
+  updatedAt       DateTime        @default(now()) @updatedAt @map("updated_at")
+  organization    Organization    @relation(fields: [organizationId], references: [id])
+  user            User            @relation(fields: [userId], references: [id])
+
+  @@index([organizationId])
+  @@index([userId])
+  @@index([status])
+  @@map("expenses")
+}
+
+view monthly_expense_report {
+  organization_id String?   @db.Uuid
+  month           DateTime? @db.Timestamp(6)
+  total_expenses  Json?     @db.Json
+  top_spenders    Json?     @db.Json
+  status_counts   Json?     @db.Json
 }
 
 enum ExpenseStatus {
@@ -30,57 +100,4 @@ enum ExpenseCategory {
   SOFTWARE
   OFFICE_SUPPLIES
   OTHER
-}
-
-model Organization {
-  id        String     @id @default(uuid()) @db.Uuid
-  name      String     @unique
-  createdAt DateTime   @default(now()) @map("created_at")
-  updatedAt DateTime   @default(now()) @updatedAt @map("updated_at")
-  users     User[]
-  expenses  Expenses[]
-
-  @@map("organizations")
-}
-
-model User {
-  id       String @id @default(uuid()) @db.Uuid
-  email    String @unique
-  password String
-  role     Role   @default(USER)
-
-  organizationId String?       @map("organization_id") @db.Uuid
-  organization   Organization? @relation(fields: [organizationId], references: [id])
-
-  refreshToken String?    @map("refresh_token")
-  createdAt    DateTime   @default(now()) @map("created_at")
-  updatedAt    DateTime   @default(now()) @updatedAt @map("updated_at")
-  expenses     Expenses[]
-
-  @@map("users")
-}
-
-model Expenses {
-  id              String          @id @default(uuid()) @db.Uuid
-  amount          Decimal         @db.Decimal(10, 2)
-  category        ExpenseCategory
-  description     String?
-  date            DateTime
-  receiptUrl      String?         @map("receipt_url")
-  status          ExpenseStatus   @default(DRAFT)
-  rejectionReason String?         @map("rejection_reason")
-
-  userId String @map("user_id") @db.Uuid
-  user   User   @relation(fields: [userId], references: [id])
-
-  organizationId String       @map("organization_id") @db.Uuid
-  organization   Organization @relation(fields: [organizationId], references: [id])
-
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
-
-  @@index([organizationId])
-  @@index([userId])
-  @@index([status])
-  @@map("expenses")
 }

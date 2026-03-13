@@ -1,0 +1,645 @@
+{
+  "info": {
+    "_postman_id": "dbca232f-9e24-4588-90a0-7ba99ce9e49f",
+    "name": "Expense Management API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "21463228"
+  },
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Refresh Token",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const refreshToken = pm.response.json().refreshToken;\r",
+                  "const accessToken = pm.response.json().accessToken;\r",
+                  "\r",
+                  "if(refreshToken) pm.environment.set(\"REFRESH_TOKEN\", refreshToken)\r",
+                  "if(accessToken) pm.environment.set(\"TOKEN\", accessToken)"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{TOKEN}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"refreshToken\": \"{{REFRESH_TOKEN}}\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{URL}}/api/auth/refresh",
+              "host": [
+                "{{URL}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "refresh"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Register",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"email\": \"{{$randomEmail}}\",\r\n    \"password\": \"demo-1@1234\",\r\n    \"role\": \"ADMIN\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{URL}}/api/auth/register",
+              "host": [
+                "{{URL}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "register"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const token = pm.response.json().token;\r",
+                  "const refreshToken = pm.response.json().refreshToken;\r",
+                  "const accessToken = pm.response.json().accessToken;\r",
+                  "\r",
+                  "if(token) pm.environment.set(\"TOKEN\", token)\r",
+                  "if(refreshToken) pm.environment.set(\"REFRESH_TOKEN\", refreshToken)\r",
+                  "if(accessToken) pm.environment.set(\"TOKEN\", accessToken)"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"email\": \"admin@acme.com\",\r\n    \"password\": \"Password@123\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{URL}}/api/auth/login",
+              "host": [
+                "{{URL}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "login"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Profile",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{TOKEN}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{URL}}/api/auth/profile",
+              "host": [
+                "{{URL}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "profile"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Users",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{TOKEN}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"bio\": \"Chasing new places, local food, and untold stories.\",\r\n    \"city\": \"Navsari\",\r\n    \"country\": \"India\"\r\n}"
+            },
+            "url": {
+              "raw": "{{URL}}/api/users?page=1&limit=10",
+              "host": [
+                "{{URL}}"
+              ],
+              "path": [
+                "api",
+                "users"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Organization",
+      "item": [
+        {
+          "name": "Create organization",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const organizationId = pm.response.json().id;\r",
+                  "if(organizationId) pm.environment.set(\"ORGANIZATION_ID\", organizationId)\r",
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{TOKEN}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"name\": \"{{$randomCompanyName}}\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{URL}}/api/organization",
+              "host": [
+                "{{URL}}"
+              ],
+              "path": [
+                "api",
+                "organization"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create organization invite",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{TOKEN}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"email\": \"member1@acme.com\",\r\n    \"role\": \"USER\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{URL}}/api/organization-invite",
+              "host": [
+                "{{URL}}"
+              ],
+              "path": [
+                "api",
+                "organization-invite"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Accept Invite",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"token\": \"98b5e7e6-311a-4d15-943d-96d3ce6fc92e\",\r\n    \"password\": \"demo-1@1234\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{URL}}/api/organization-invite/accept",
+              "host": [
+                "{{URL}}"
+              ],
+              "path": [
+                "api",
+                "organization-invite",
+                "accept"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get organization",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{TOKEN}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{URL}}/api/organization",
+              "host": [
+                "{{URL}}"
+              ],
+              "path": [
+                "api",
+                "organization"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Invites",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{TOKEN}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{URL}}/api/organization-invite?accepted=false",
+              "host": [
+                "{{URL}}"
+              ],
+              "path": [
+                "api",
+                "organization-invite"
+              ],
+              "query": [
+                {
+                  "key": "accepted",
+                  "value": "false"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Expenses",
+      "item": [
+        {
+          "name": "Create Expense",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{TOKEN}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"amount\": \"{{$randomPrice}}\",\r\n    \"category\": \"OFFICE_SUPPLIES\",\r\n    \"description\": \"{{$randomLoremParagraph}}\",\r\n    \"date\": \"2026-03-13T12:00:00.000Z\",\r\n    \"receiptUrl\": \"{{$randomImageUrl}}\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{URL}}/api/expenses",
+              "host": [
+                "{{URL}}"
+              ],
+              "path": [
+                "api",
+                "expenses"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Expense Status Webhook",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "x-webhook-secret",
+                "value": "expense_tracker_webhook_secret_b0def6a7-3c36-461e-9c22-78a8340f7c5f_935df30a-fbdc-4cb6-a8fe-69d3a09b1ba5"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"expense_id\": \"d76477c5-1198-47e3-aa61-143ba92804be\",\n    \"new_status\": \"APPROVED\",\n    \"rejection_reason\": \"{{$randomLoremSentence}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{URL}}/api/webhooks/expense-status",
+              "host": [
+                "{{URL}}"
+              ],
+              "path": [
+                "api",
+                "webhooks",
+                "expense-status"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Expenses",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{TOKEN}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{URL}}/api/expenses",
+              "host": [
+                "{{URL}}"
+              ],
+              "path": [
+                "api",
+                "expenses"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Expens",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{TOKEN}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"receiptUrl\": \"{{$randomImageUrl}}\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{URL}}/api/expenses/:id",
+              "host": [
+                "{{URL}}"
+              ],
+              "path": [
+                "api",
+                "expenses",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "d76477c5-1198-47e3-aa61-143ba92804be"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Expense Status",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{TOKEN}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"status\": \"SUBMITTED\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{URL}}/api/expenses/:id/status",
+              "host": [
+                "{{URL}}"
+              ],
+              "path": [
+                "api",
+                "expenses",
+                ":id",
+                "status"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "7431aa27-c4a1-4b02-82f8-8bb05d861f8e"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Monthly Expenses Summary",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{TOKEN}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer <ADMIN_ACCESS_TOKEN>"
+              }
+            ],
+            "url": {
+              "raw": "{{URL}}/api/reports/monthly-summary?month=2026-03",
+              "host": [
+                "{{URL}}"
+              ],
+              "path": [
+                "api",
+                "reports",
+                "monthly-summary"
+              ],
+              "query": [
+                {
+                  "key": "month",
+                  "value": "2026-03"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}

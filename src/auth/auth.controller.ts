@@ -55,11 +55,12 @@ export class AuthController {
       data: {
         email,
         password: hashPassword,
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+
         role: role ?? Role.USER,
       },
       omit: {
         password: true,
+        refreshToken: true,
       },
     });
   }
@@ -74,6 +75,9 @@ export class AuthController {
           equals: email,
           mode: 'insensitive',
         },
+        ...(loginUserDto?.organizationId && {
+          organizationId: loginUserDto.organizationId,
+        }),
       },
       omit: {
         refreshToken: true,
@@ -116,7 +120,6 @@ export class AuthController {
     @Body() dto: RefreshTokenDto,
   ) {
     const accessToken = auth?.replace('Bearer ', '');
-    console.log('accessToken :: ', accessToken);
 
     return this.authService.refreshAccessToken(accessToken, dto.refreshToken);
   }

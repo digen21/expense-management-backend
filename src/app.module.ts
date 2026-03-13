@@ -5,11 +5,15 @@ import { transformAndValidateSync } from 'class-transformer-validator';
 import { AppController } from './app.controller';
 import { AuthModule } from './auth/auth.module';
 import { ExpensesModule } from './expenses/expenses.module';
+import { OrganizationInviteModule } from './organization-invite/organization-invite.module';
 import { OrganizationModule } from './organization/organization.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { PrismaService } from './prisma/prisma.service';
 import { UsersModule } from './users/users.module';
 import { EnvConfig } from './validators/env.validators';
+import { WebhooksModule } from './webhooks/webhooks.module';
+import { ReportsController } from './reports/reports.controller';
+import { ReportsModule } from './reports/reports.module';
 
 @Module({
   imports: [
@@ -21,8 +25,11 @@ import { EnvConfig } from './validators/env.validators';
     OrganizationModule,
     UsersModule,
     ExpensesModule,
+    OrganizationInviteModule,
+    WebhooksModule,
+    ReportsModule,
   ],
-  controllers: [AppController],
+  controllers: [AppController, ReportsController],
   providers: [
     {
       provide: EnvConfig,

@@ -25,10 +25,50 @@
 
 [Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
 
+## Database schema
+
+- `organizations`: organizations/tenants. Fields: `id`, `name`, timestamps. One-to-many with `users`, `expenses`, `organization_invite`.
+- `users`: members/admins. Fields: `id`, `email`, `password`, `role`, `organization_id`, `refresh_token`, timestamps. Unique `(email, organization_id)`.
+- `organization_invite`: invites to join an organization. Fields: `id`, `email`, `organization_id`, `role`, `token`, `expires_at`, `accepted`, timestamps.
+- `expenses`: expense records. Fields: `id`, `amount`, `category`, `description`, `date`, `receipt_url`, `status`, `rejection_reason`, `user_id`, `organization_id`, timestamps. Indexed by `organization_id`, `user_id`, `status`.
+- `monthly_expense_report` (view): aggregated monthly report per org/month with JSON fields: `total_expenses`, `top_spenders`, `status_counts`.
+
+Enums:
+
+- `Role`: `ADMIN`, `USER`
+- `ExpenseStatus`: `DRAFT`, `SUBMITTED`, `APPROVED`, `REJECTED`
+- `ExpenseCategory`: `TRAVEL`, `FOOD`, `SOFTWARE`, `OFFICE_SUPPLIES`, `OTHER`
+
+## API endpoints
+
+- `GET /api` — Health check — Auth: None
+- `POST /api/auth/register` — Register user — Auth: None
+- `POST /api/auth/login` — Login — Auth: None
+- `GET /api/auth/profile` — Get current user — Auth: JWT
+- `POST /api/auth/refresh` — Refresh access token — Auth: Access token + refresh token
+- `POST /api/organization` — Create organization — Auth: JWT (Admin)
+- `GET /api/organization` — Get organization — Auth: JWT
+- `POST /api/organization-invite` — Create invite — Auth: JWT (Admin)
+- `GET /api/organization-invite` — List invites — Auth: JWT (Admin)
+- `POST /api/organization-invite/accept` — Accept invite — Auth: None
+- `GET /api/users` — List users — Auth: JWT
+- `POST /api/expenses` — Create expense — Auth: JWT
+- `PATCH /api/expenses/:id/status` — Update expense status — Auth: JWT
+- `PATCH /api/expenses/:id` — Update expense details — Auth: JWT
+- `GET /api/expenses` — List expenses — Auth: JWT
+- `POST /api/webhooks/expense-status` — Webhook update status — Auth: `x-webhook-secret` header
+- `GET /api/reports/monthly-summary` — Monthly report — Auth: JWT (Admin)
+
 ## Project setup
 
 ```bash
+$ git clone https://github.com/digen21/expense-management-backend.git
+$ cd expense-management-backend
 $ yarn install
+$ cp .env.example .env
+$ yarn run prisma:migrate
+$ yarn run prisma:seed
+$ yarn run start:dev
 ```
 
 ## Compile and run the project
@@ -43,56 +83,3 @@ $ yarn run start:dev
 # production mode
 $ yarn run start:prod
 ```
-
-## Run tests
-
-```bash
-# unit tests
-$ yarn run test
-
-# e2e tests
-$ yarn run test:e2e
-
-# test coverage
-$ yarn run test:cov
-```
-
-## Deployment
-
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
-
-```bash
-$ yarn install -g @nestjs/mau
-$ mau deploy
-```
-
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
-
-## Resources
-
-Check out a few resources that may come in handy when working with NestJS:
-
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).

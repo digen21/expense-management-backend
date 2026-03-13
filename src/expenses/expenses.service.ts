@@ -1,26 +1,35 @@
 import { Injectable } from '@nestjs/common';
-import { CreateExpenseDto } from './dto/create-expense.dto';
-import { UpdateExpenseDto } from './dto/update-expense.dto';
+import { Prisma } from '@prisma/expense-tracker-client';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class ExpensesService {
-  create(createExpenseDto: CreateExpenseDto) {
-    return 'This action adds a new expense';
+  constructor(private readonly prisma: PrismaService) {}
+
+  create(args: Prisma.ExpensesCreateArgs) {
+    return this.prisma.expenses.create(args);
   }
 
-  findAll() {
-    return `This action returns all expenses`;
+  findUnique(args: Prisma.ExpensesFindUniqueArgs) {
+    return this.prisma.expenses.findUnique(args);
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} expense`;
+  find(args: Prisma.ExpensesFindManyArgs) {
+    return this.prisma.expenses.findMany(args);
   }
 
-  update(id: number, updateExpenseDto: UpdateExpenseDto) {
-    return `This action updates a #${id} expense`;
+  count(args: Prisma.ExpensesCountArgs) {
+    return this.prisma.expenses.count(args);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} expense`;
+  update(args: Prisma.ExpensesUpdateArgs) {
+    return this.prisma.expenses.update(args);
+  }
+
+  expenseReport(args: Prisma.monthly_expense_reportFindManyArgs) {
+    return this.prisma.monthly_expense_report.findMany({
+      orderBy: {},
+      ...args,
+    });
   }
 }

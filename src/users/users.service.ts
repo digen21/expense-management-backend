@@ -14,6 +14,14 @@ export class UsersService {
     return this.prisma.user.findFirst(args);
   }
 
+  findMany(args?: Prisma.UserFindManyArgs) {
+    return this.prisma.user.findMany(args);
+  }
+
+  count(args?: Prisma.UserCountArgs) {
+    return this.prisma.user.count(args);
+  }
+
   updateOne(args: Prisma.UserUpdateArgs) {
     return this.prisma.user.update(args);
   }
