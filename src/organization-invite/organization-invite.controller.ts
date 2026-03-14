@@ -80,7 +80,6 @@ export class OrganizationInviteController {
   @Roles(Role.ADMIN)
   async getAll(@CurrentUser() user: SafeUser, @Query() query: GetAllInvites) {
     const { page = 1, limit = 10, ...filter } = query;
-    console.log('filter ', query);
 
     const [invites, total] = await Promise.all([
       this.organizationInviteService.findAll({
